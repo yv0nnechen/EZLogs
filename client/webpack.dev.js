@@ -8,8 +8,9 @@ module.exports = merge(common, {
   mode: "development",
   devtool: "inline-source-map",
   devServer: {
-    contentBase: "./deploy/local",
-    port: 9090
+    contentBase: "client/src", 
+    port: 9090,
+    compress: true
   },
   output: {
     filename: "[name].bundle.js",

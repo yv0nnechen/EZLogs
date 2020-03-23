@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <router-view />
+    <router-view name="appmain"/>
 
     <dashboard-core-footer />
   </v-content>

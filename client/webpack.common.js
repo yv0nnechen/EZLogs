@@ -50,6 +50,9 @@ module.exports = {
   entry: {
     app: "./client/src/main.js"
   },
+  output: {
+    publicPath: '',
+  },
   module: {
     rules: [
       {

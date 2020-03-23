@@ -2,3 +2,5 @@ node_modules
 .vscode
 */deploy
 .clasp.json
+deploy/
+*.cache

@@ -77,14 +77,16 @@
     </v-list>
 
     <template v-slot:append>
-      <base-item
-        :item="{
-          title: 'upgrade',
-          icon: 'mdi-package-up',
-          to: '/upgrade',
-        }"
-      />
+      <v-list-item @click="logout">
+          <v-list-item-icon>
+            <v-icon>mdi-exit-to-app</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item-content>
+      </v-list-item>
     </template>
+
   </v-navigation-drawer>
 </template>
 
@@ -93,6 +95,8 @@
   import {
     mapState,
   } from 'vuex'
+
+  const fb = require('@/config/firebaseConfig.js')
 
   export default {
     name: 'DashboardCoreDrawer',
@@ -109,7 +113,12 @@
         {
           icon: 'mdi-view-dashboard',
           title: 'dashboard',
-          to: '/',
+          to: '/dashboard',
+        },
+        {
+          icon: 'mdi-view-dashboard',
+          title: 'Calculator',
+          to: '/calculator',
         },
         {
           icon: 'mdi-account',
@@ -173,6 +182,15 @@
           title: item.title,
         }
       },
+      logout() {
+        console.log('logging out');
+                fb.auth.signOut().then(() => {
+                    this.$store.dispatch('clearData')
+                    this.$router.push('/login')
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
     },
   }
 </script>
