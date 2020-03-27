@@ -9,7 +9,7 @@ module.exports = merge(common, {
   devtool: "inline-source-map",
   devServer: {
     contentBase: "client/src", 
-    port: 9090,
+    port: 1203,
     compress: true
   },
   output: {

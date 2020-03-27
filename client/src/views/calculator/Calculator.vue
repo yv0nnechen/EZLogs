@@ -8,6 +8,7 @@
             background-color="transparent"
             height="5em"
             fixed-tabs
+            @change="resetForm()"
           >
             <v-tab v-for="shape in shapes" :key="shape.id">
               <v-icon v-text="shape.icon"></v-icon>
@@ -20,101 +21,132 @@
               <v-card flat>
                 <v-card-text>
                   <h2>{{ shape.title }}</h2>
-                  <v-form ref="form" v-model="valid" lazy-validation>
-                    <v-row name="height" v-show="showProp('height')">
-                      <v-col cols="12" sm="6">
+                  <v-form ref="form-slab" v-model="validSlab" lazy-validation>
+                    <v-row name="depth" v-show="showProp('depth')">
+                      <v-col cols="6" sm="6">
                         <v-text-field
-                          v-model="calc.height"
+                          v-model="calc.depth.number"
                           :rules="[rules.required]"
                           label="Depth/Height"
                           type="number"
-                          required
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="12" sm="6">
+                      <v-col cols="6" sm="6">
                         <v-select
-                          v-model="calc.heightUnit"
+                          v-model="calc.depth.unit"
                           :items="units"
                           :rules="[rules.required]"
                           label="Unit"
-                          required
                         ></v-select>
                       </v-col>
                     </v-row>
 
                     <v-row name="length" v-show="showProp('length')">
-                      <v-col cols="12" sm="6">
+                      <v-col cols="6" sm="6">
                         <v-text-field
-                          v-model="calc.length"
+                          v-model="calc.length.number"
                           label="Length"
                           value="shape.id"
                           :rules="[rules.required]"
                           type="number"
-                          required
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="12" sm="6">
+                      <v-col cols="6" sm="6">
                         <v-select
-                          v-model="calc.lengthUnit"
+                          v-model="calc.length.unit"
                           :items="units"
                           :rules="[rules.required]"
                           label="Unit"
-                          required
                         ></v-select>
                       </v-col>
                     </v-row>
 
                     <v-row name="width" v-show="showProp('width')">
-                      <v-col cols="12" sm="6">
+                      <v-col cols="6" sm="6">
                         <v-text-field
-                          v-model="calc.width"
+                          v-model="calc.width.number"
                           :rules="[rules.required]"
                           type="number"
                           label="Width"
-                          required
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="12" sm="6">
+                      <v-col cols="6" sm="6">
                         <v-select
-                          v-model="calc.widthUnit"
+                          v-model="calc.width.unit"
                           :items="units"
                           :rules="[rules.required]"
                           label="Unit"
-                          required
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                  </v-form>
+
+                  <v-form
+                    ref="form-cylinder"
+                    v-model="validCylinder"
+                    lazy-validation
+                  >
+                    <v-row name="height" v-show="showProp('height')">
+                      <v-col cols="6" sm="6">
+                        <v-text-field
+                          v-model="calc.height.number"
+                          :rules="[rules.required]"
+                          label="Depth/Height"
+                          type="number"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="6" sm="6">
+                        <v-select
+                          v-model="calc.height.unit"
+                          :items="units"
+                          :rules="[rules.required]"
+                          label="Unit"
                         ></v-select>
                       </v-col>
                     </v-row>
 
                     <v-row name="diameter" v-show="showProp('diameter')">
-                      <v-col cols="12" sm="6">
+                      <v-col cols="6" sm="6">
                         <v-text-field
-                          v-model="calc.diameter"
+                          v-model="calc.diameter.number"
                           :rules="[rules.required]"
-                          type="number"
                           label="Diameter"
-                          required
+                          type="number"
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="12" sm="6">
+                      <v-col cols="6" sm="6">
                         <v-select
-                          v-model="calc.diameterUnit"
+                          v-model="calc.diameter.unit"
                           :items="units"
                           :rules="[rules.required]"
                           label="Unit"
-                          required
                         ></v-select>
                       </v-col>
                     </v-row>
-
                   </v-form>
+
+                  <v-divider inset></v-divider>
+                  <v-row name="result">
+                    <v-col cols="12">
+                      <v-text-field
+                        label="Result"
+                        outlined
+                        disabled
+                        v-model="resultVolume"
+                      >
+                        <template v-slot:append>M<sup>3</sup></template>
+                      </v-text-field>
+                    </v-col>
+                  </v-row>
+                  <!-- </v-form> -->
                 </v-card-text>
                 <v-card-actions>
                   <v-btn color="deep-purple lighten-2" text @click="calculate">
                     Calculate
                   </v-btn>
-                  <v-btn color="error lighten-2" text  @click="resetForm">
-                      Reset Form
-                    </v-btn>
+                  <v-btn color="error lighten-2" text @click="resetForm">
+                    Reset Form
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-tab-item>
@@ -123,21 +155,7 @@
       </v-col>
 
       <v-col cols="12" md="6">
-        <template>
-          <v-card max-width="600" class="mx-auto">
-            <v-toolbar color="light-blue" dark>
-              <v-toolbar-title>History Results</v-toolbar-title>
-
-              <v-spacer></v-spacer>
-            </v-toolbar>
-
-            <v-list two-line subheader>
-              <v-subheader inset>Folders</v-subheader>
-
-              <v-divider inset></v-divider>
-            </v-list>
-          </v-card>
-        </template>
+        <result-history ref="resultHistory"></result-history>
       </v-col>
     </v-row>
   </v-container>
@@ -145,60 +163,79 @@
 
 <script>
 import _ from "Underscore";
+import { Slab, Cylinder, Shape } from "./CalculatorUtil";
+import ShapeFixture from "./ShapeFixture";
+import ResultHistory from "./ResultHistory";
+
 export default {
   name: "ConcreteCalculator",
-
+  components: {
+    ResultHistory
+  },
   data() {
     return {
       //UI setup below
       tab: null, // init tab
-      shapes: [
-        {
-          id: "square",
-          title: "Square Slab / Wall/ Column",
-          icon: "mdi-cube-outline",
-          props: ["height", "length", "width"]
-        },
-        {
-          id: "round",
-          title: "Round Slab / Column",
-          icon: "mdi-pillar",
-          props: ["height", "diameter"]
-        },
-        {
-          id: "steps",
-          title: "Steps",
-          icon: "",
-          props: []
-        }
-      ],
-      valid: true,
+      select: null,
+      validSlab: true,
+      validCylinder: true,
       rules: {
         required: value => !!value || "Required.",
         number: value => {
           return _.isNumber(value) || "Must be a number";
         }
       },
-      select: null,
-      units: ["cm", "m"],
-//model data below
-       calc: {
-        height: "",
-        length: "",
-        width: "",
-        diameter: "",
-        heightUnit: "",
-        lengthUnit: "",
-        widthUnit: "",
-        diameterUnit: ""
-      },
+      shapes: ShapeFixture.shapes,
+      units: ShapeFixture.units,
+      //model data below,
+      resultVolume: "",
+      calc: {
+        depth: {
+          dimension: "depth",
+          number: "",
+          unit: ""
+        },
+        length: {
+          dimension: "length",
+          number: "",
+          unit: ""
+        },
+        width: {
+          dimension: "width",
+          number: "",
+          unit: ""
+        },
+        height: {
+          dimension: "height",
+          number: "",
+          unit: ""
+        },
+        diameter: {
+          dimensions: "diameter",
+          number: "",
+          unit: ""
+        }
+      }
     };
   },
   computed: {},
   methods: {
     calculate() {
-      if(this.validate()){
-        this.resetForm();
+      switch (this.tab) {
+        case 0:
+          if (this.validateSlab()) {
+            let slab = new Slab(this.calc.width,this.calc.length,this.calc.depth);
+            this.resultVolume = slab.toVolumnInMeters();
+            this.resultAdded(slab);
+          }
+          break;
+        case 1:
+          if (this.validateCylinder()) {
+            let cylinder = new Cylinder(this.calc.diameter, this.calc.height);
+            this.resultVolume = cylinder.toVolumnInMeters();
+            this.resultAdded(cylinder);
+          }
+          break;
       }
     },
     showProp(measurement) {
@@ -209,12 +246,24 @@ export default {
       return false;
     },
     resetForm() {
-      this.$refs.form[0].reset();
+      for (const formName in this.$refs) {
+        this.$refs[formName].forEach(form => {
+          form.reset();
+        });
+      }
+      this.resultVolume = "";
     },
-    validate () {
-        return this.$refs.form[0].validate();
-      },
-  }
+    validateSlab() {
+      return this.$refs["form-slab"][0].validate();
+    },
+    validateCylinder() {
+      return this.$refs["form-cylinder"][1].validate();
+    },
+    resultAdded(shape) {
+      if(!(shape instanceof Shape)) return; 
+      this.$refs.resultHistory.resultAdded(shape);
+    }
+  },
 };
 </script>
 
