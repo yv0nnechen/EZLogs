@@ -10,10 +10,20 @@ module.exports = {
   parserOptions: {
     parser: 'babel-eslint',
   },
+  settings: {
+    "import/extensions": [".js",".jsx",".ts",".tsx", ".vue"],
+    "import/resolver": {
+        "node": {
+            "extensions": [".js",".jsx",".ts",".tsx", ".vue"],
+        },
+    }
+},
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-  },
+    'import/extensions': ['error', 'always', {'js': 'never', 'vue': 'never'}],
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+  }, 
   overrides: [
     {
       files: [
@@ -25,4 +35,5 @@ module.exports = {
       },
     },
   ],
+  
 };
